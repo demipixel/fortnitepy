@@ -13,6 +13,9 @@
 import os
 import sys
 import re
+
+from importlib import import_module
+
 sys.path.insert(0, os.path.abspath('./..'))
 
 
@@ -90,8 +93,26 @@ def viewcode_find_source(app, modname):
     print('viewcode-find-source EVENT', repr(modname))
 
 
+def _find(module, attribute):
+    value = module
+    for attr in attribute.split('.'):
+        if attr:
+            value = getattr(value, attr)
+
+    return getattr(value, '__module__', None)
+
+
 def viewcode_follow_imported(app, modname, attribute):
     print('viewcode-follow-imported EVENT', repr(modname), repr(attribute))
+
+    if modname is None:
+        return None
+
+    module = import_module(modname)
+
+    new = _find(module, attribute)
+    print('NEW FOUND', new)
+    return new
 
 
 def setup(app):
