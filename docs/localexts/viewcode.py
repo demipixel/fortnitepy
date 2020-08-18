@@ -202,6 +202,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         parents.append({'link': urito(pagename, '_modules/index'),
                         'title': _('Module code')})
         parents.reverse()
+        print(json.dumps(parents, indent=2))
         # putting it all together
         context = {
             'parents': parents,
