@@ -18,6 +18,7 @@ from importlib import import_module
 from types import ModuleType
 
 sys.path.insert(0, os.path.abspath('./..'))
+sys.path.append(os.path.abspath('localexts'))
 
 
 # -- Project information -----------------------------------------------------
@@ -45,7 +46,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'sphinxcontrib_trio',
-    'sphinx.ext.viewcode',
+    #'sphinx.ext.viewcode',
 ]
 
 
@@ -151,5 +152,5 @@ def viewcode_follow_imported(app, modname, attribute):
 def setup(app):
     app.add_stylesheet('style.css')
     app.add_javascript('custom.js')
-    app.connect('viewcode-find-source', viewcode_find_source)
-    app.connect('viewcode-follow-imported', viewcode_follow_imported)
+    # app.connect('viewcode-find-source', viewcode_find_source)
+    # app.connect('viewcode-follow-imported', viewcode_follow_imported)
