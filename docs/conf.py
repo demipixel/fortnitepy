@@ -87,10 +87,15 @@ html_static_path = ['_static']
 
 
 def viewcode_find_source(app, modname):
-    print(str(app), str(modname))
+    print('viewcode-find-source EVENT', repr(modname))
+
+
+def viewcode_follow_imported(app, modname, attribute):
+    print('viewcode-follow-imported EVENT', repr(modname), repr(attribute))
 
 
 def setup(app):
     app.add_stylesheet('style.css')
     app.add_javascript('custom.js')
     app.connect('viewcode-find-source', viewcode_find_source)
+    app.connect('viewcode-follow-imported', viewcode_follow_imported)
