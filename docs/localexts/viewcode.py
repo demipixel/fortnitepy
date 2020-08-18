@@ -158,6 +158,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         if not entry:
             continue
         code, tags, used, refname = entry
+        print(json.dumps(entry, indent=2))
         # construct a page name for the highlighted source
         pagename = '_modules/' + modname.replace('.', '/')
         # highlight the source using the builder's highlighter
@@ -166,7 +167,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         else:
             lexer = 'python'
         # print('HIGHLIGHTING', code)
-        highlighted = highlighter.highlight_block(code, lexer, linenos=True)
+        highlighted = highlighter.highlight_block(code, lexer, linenos=False)
         # print('HIGHLIGHTED', highlighted)
         # split the code into lines
         lines = highlighted.splitlines()
