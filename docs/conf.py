@@ -47,6 +47,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinxcontrib_trio',
     #'sphinx.ext.viewcode',
+    'viewcode'
 ]
 
 
