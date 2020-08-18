@@ -148,7 +148,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
     urito = app.builder.get_relative_uri
 
     modnames = set(env._viewcode_modules)  # type: ignore
-    print(json.dumps(env._viewcode_modules, indent=2))
+    # print(json.dumps(env._viewcode_modules, indent=2))
 
     for modname, entry in status_iterator(
             sorted(env._viewcode_modules.items()),  # type: ignore
@@ -173,14 +173,15 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         # split off wrap markup from the first line of the actual code
         before, after = lines[0].split('<pre>')
         lines[0:1] = [before + '<pre>', after]
-        print('BEFORE', lines, 'AFTER')
+        # print('BEFORE', lines, 'AFTER')
         # nothing to do for the last line; it always starts with </pre> anyway
         # now that we have code lines (starting at index 1), insert anchors for
         # the collected tags (HACK: this only works if the tag boundaries are
         # properly nested!)
         maxindex = len(lines) - 1
         for name, docname in used.items():
-            type, start, end = tags[name]
+            type_, start, end = tags[name]
+            print('TYPE START END', type_, start, end, maxindex)
             backlink = urito(pagename, docname) + '#' + refname + '.' + name
             lines[start] = (
                 '<div class="viewcode-block" id="%s"><a class="viewcode-back" '
