@@ -234,6 +234,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
 
 
 def setup(app: Sphinx) -> Dict[str, Any]:
+    print('Loaded custom viewcode.')
     app.add_config_value('viewcode_import', None, False)
     app.add_config_value('viewcode_enable_epub', False, False)
     app.add_config_value('viewcode_follow_imported_members', True, False)
