@@ -165,14 +165,15 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
             lexer = env.config.highlight_language
         else:
             lexer = 'python'
-        print('HIGHLIGHTING', code)
+        # print('HIGHLIGHTING', code)
         highlighted = highlighter.highlight_block(code, lexer, linenos=True)
-        print('HIGHLIGHTED', highlighted)
+        # print('HIGHLIGHTED', highlighted)
         # split the code into lines
         lines = highlighted.splitlines()
         # split off wrap markup from the first line of the actual code
         before, after = lines[0].split('<pre>')
         lines[0:1] = [before + '<pre>', after]
+        print('BEFORE', lines, 'AFTER')
         # nothing to do for the last line; it always starts with </pre> anyway
         # now that we have code lines (starting at index 1), insert anchors for
         # the collected tags (HACK: this only works if the tag boundaries are
