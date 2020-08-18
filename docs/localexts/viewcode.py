@@ -9,6 +9,7 @@
 """
 
 import traceback
+import json
 from typing import Any, Dict, Iterable, Iterator, Set, Tuple
 
 from docutils import nodes
@@ -147,6 +148,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
     urito = app.builder.get_relative_uri
 
     modnames = set(env._viewcode_modules)  # type: ignore
+    print(json.dumps(env._viewcode_modules, indent=2))
 
     for modname, entry in status_iterator(
             sorted(env._viewcode_modules.items()),  # type: ignore
@@ -163,7 +165,9 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
             lexer = env.config.highlight_language
         else:
             lexer = 'python'
-        highlighted = highlighter.highlight_block(code, lexer, linenos=False)
+        print('HIGHLIGHTING', code)
+        highlighted = highlighter.highlight_block(code, lexer, linenos=True)
+        print('HIGHLIGHTED', highlighted)
         # split the code into lines
         lines = highlighted.splitlines()
         # split off wrap markup from the first line of the actual code
@@ -234,7 +238,6 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
 
 
 def setup(app: Sphinx) -> Dict[str, Any]:
-    print('Loaded custom viewcode.')
     app.add_config_value('viewcode_import', None, False)
     app.add_config_value('viewcode_enable_epub', False, False)
     app.add_config_value('viewcode_follow_imported_members', True, False)
@@ -246,6 +249,7 @@ def setup(app: Sphinx) -> Dict[str, Any]:
     # app.add_config_value('viewcode_exclude_modules', [], 'env')
     app.add_event('viewcode-find-source')
     app.add_event('viewcode-follow-imported')
+    print('Loaded custom viewcode.')
     return {
         'version': sphinx.__display_version__,
         'env_version': 1,
