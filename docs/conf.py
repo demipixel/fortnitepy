@@ -85,6 +85,12 @@ html_theme = 'alabaster'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+
+def viewcode_find_source(app, modname):
+    print(str(app), str(modname))
+
+
 def setup(app):
     app.add_stylesheet('style.css')
     app.add_javascript('custom.js')
+    app.connect('viewcode-find-source', viewcode_find_source)
