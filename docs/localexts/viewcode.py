@@ -184,14 +184,14 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         for name, (type_, start, end) in tags.items():
             # type_, start, end = tags[name]
             if name in used:
-                a_elem = '<a class="viewcode-back" href="%s">%s</a>'.format(backlink, _('[docs]'))
+                a_elem = '<a class="viewcode-back" href="{}">{}</a>'.format(backlink, _('[docs]'))
             else:
                 a_elem = ''
             docname = 'api'
             print('TYPE START END', type_, start, end, maxindex)
             backlink = urito(pagename, docname) + '#' + refname + '.' + name
             print('BACKLINK', backlink)
-            div_elem = '<div class="viewcode-block" id="%s">'.format(name)
+            div_elem = '<div class="viewcode-block" id="{}">'.format(name)
             lines[start] = div_elem + a_elem + lines[start]
             lines[min(end, maxindex)] += '</div>'
         # try to find parents (for submodules)
@@ -259,6 +259,9 @@ def setup(app: Sphinx) -> Dict[str, Any]:
     app.add_event('viewcode-find-source')
     app.add_event('viewcode-follow-imported')
     print('Loaded custom viewcode.')
+    print('Docnames:', app.project.docnames)
+    print('Source Suffix', app.project.source_suffix)
+    print('Src Dir:', app.project.srcdir)
     return {
         'version': sphinx.__display_version__,
         'env_version': 1,
