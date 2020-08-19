@@ -156,6 +156,7 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
         for signode in objnode:
             if not isinstance(signode, addnodes.desc_signature):
                 continue
+            print('SIGNODE', json.dumps(signode, indent=2, default=lambda o: str(o)))
             modname = signode.get('module')
             fullname = signode.get('fullname')
             refname = modname
