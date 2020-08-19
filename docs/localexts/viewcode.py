@@ -141,6 +141,9 @@ def missing_reference(app: Sphinx, env: BuildEnvironment, node: Element, contnod
 
 
 def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
+    print('Docnames:', app.project.docnames)
+    print('Source Suffix', app.project.source_suffix)
+    print('Src Dir:', app.project.srcdir)
     env = app.builder.env
     if not hasattr(env, '_viewcode_modules'):
         return
@@ -259,9 +262,6 @@ def setup(app: Sphinx) -> Dict[str, Any]:
     app.add_event('viewcode-find-source')
     app.add_event('viewcode-follow-imported')
     print('Loaded custom viewcode.')
-    print('Docnames:', app.project.docnames)
-    print('Source Suffix', app.project.source_suffix)
-    print('Src Dir:', app.project.srcdir)
     return {
         'version': sphinx.__display_version__,
         'env_version': 1,
