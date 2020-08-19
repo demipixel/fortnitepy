@@ -28,13 +28,13 @@ from sphinx.util.nodes import make_refnode
 logger = logging.getLogger(__name__)
 
 
-def get_github_line_link(app, filename, line1, line2):
+def get_github_line_link(app, filepath, line1, line2):
     data = app.config._raw_config['context']
-    return 'https://github.com/{user}/{repo}/blob/{version}/{repo}/{file}#L{line1}-L{line2}'.format(
+    return 'https://github.com/{user}/{repo}/blob/{version}/{filepath}#L{line1}-L{line2}'.format(
         user=data['github_user'],
         repo=data['github_repo'],
         version=data['github_version'],
-        file=filename,
+        filepath=filepath,
         line1=line1,
         line2=line2
     )
@@ -202,7 +202,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         for name, (type_, start, end) in tags.items():
             # type_, start, end = tags[name]
             if name in used:
-                a_elem = '<a class="viewcode-back" href="{}">{}</a>'.format(backlink, _('[docs]'))
+                a_elem = '<a class="viewcode-back" href="{}">{}</a> '.format(backlink, _('[docs]'))
             else:
                 a_elem = ''
             docname = 'api'
@@ -210,10 +210,11 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
             backlink = urito(pagename, docname) + '#' + refname + '.' + name
             print('BACKLINK', backlink)
 
-            # file_ = modname.replace('/')
-            # github_line_link = get_github_line_link(app, )
+            file_ = modname.replace('.', '/') + '.py'
+            github_line_link = get_github_line_link(app, file_, start, min(end, maxindex))
+            github_a_elem = '<a class="viewcode-back" href="{}">{}</a>'.format(github_line_link, _('[github]'))
             div_elem = '<div class="viewcode-block" id="{}">'.format(name)
-            lines[start] = div_elem + a_elem + lines[start]
+            lines[start] = div_elem + a_elem + github_a_elem + lines[start]
             lines[min(end, maxindex)] += '</div>'
         # try to find parents (for submodules)
         parents = []
