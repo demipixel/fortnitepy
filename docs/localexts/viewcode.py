@@ -70,6 +70,7 @@ def _findsub(module, attribute):
             return new
 
 
+
 def _find_modname(module, attribute):
     try:
         value = module
@@ -77,18 +78,14 @@ def _find_modname(module, attribute):
             if attr:
                 value = getattr(value, attr, None)
                 if value is None:
-                    bases = getattr(value, '__bases__', None)
-                    if bases is None:
-                        return None
-                    if len(bases) == 1 and bases[0] is object:
-                        return None
+                    while not (len(bases) == 1 and bases[0] is object):
+                        for base in bases:
+                            _val = getattr(base, attribute, None)
+                            if _val is not None:
+                                value = _val
 
-                    for base in bases:
-                        new = _findsub(base, attribute)
-                        if new is not None:
-                            value = new
-
-        return getattr(value, '__module__', None)
+        print('THE VALUE:', getattr(value, '__qualname__', None))
+        return getattr(value, '__module__', None), getattr(value, '__qualname__', None)
     except AttributeError:
         # sphinx.ext.viewcode can't follow class instance attribute
         # then AttributeError logging output only verbose mode.
@@ -170,7 +167,7 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                     new_modname = _get_full_modname(app, modname, fullname)
                 modname = new_modname
             
-            modname = viewcode_follow_imported(app, modname, fullname)
+            modname, fullname = viewcode_follow_imported(app, modname, fullname)
 
             if not modname:
                 continue
