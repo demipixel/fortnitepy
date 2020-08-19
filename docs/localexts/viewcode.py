@@ -167,7 +167,9 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                     new_modname = _get_full_modname(app, modname, fullname)
                 modname = new_modname
             
-            modname, fullname = viewcode_follow_imported(app, modname, fullname)
+            ret = viewcode_follow_imported(app, modname, fullname)
+            if ret:
+                modname, fullname = ret
 
             if not modname:
                 continue
