@@ -24,6 +24,8 @@ from sphinx.pycode import ModuleAnalyzer
 from sphinx.util import get_full_modname, logging, status_iterator
 from sphinx.util.nodes import make_refnode
 
+from importlib import import_module
+
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +58,60 @@ def _get_full_modname(app: Sphinx, modname: str, attribute: str) -> str:
         logger.verbose(traceback.format_exc().rstrip())
         logger.verbose('viewcode can\'t import %s, failed with error "%s"', modname, e)
         return None
+
+
+def _findsub(module, attribute):
+    for submod in module.__dict__:
+        if not isinstance(submod, ModuleType):
+            continue
+
+        new = getattr(module, attribute, None)
+        if new is not None:
+            return new
+
+
+def _find_modname(module, attribute):
+    try:
+        value = module
+        for attr in attribute.split('.'):
+            if attr:
+                value = getattr(value, attr, None)
+                if value is None:
+                    bases = getattr(value, '__bases__', None)
+                    if bases is None:
+                        return None
+                    if len(bases) == 1 and bases[0] is object:
+                        return None
+
+                    for base in bases:
+                        new = _findsub(base, attribute)
+                        if new is not None:
+                            value = new
+
+        return getattr(value, '__module__', None)
+    except AttributeError:
+        # sphinx.ext.viewcode can't follow class instance attribute
+        # then AttributeError logging output only verbose mode.
+        return None
+    except Exception:
+        # sphinx.ext.viewcode follow python domain directives.
+        # because of that, if there are no real modules exists that specified
+        # by py:function or other directives, viewcode emits a lot of warnings.
+        # It should be displayed only verbose mode.
+        return None
+
+
+def viewcode_follow_imported(app, modname, attribute):
+    print('viewcode-follow-imported EVENT', repr(modname), repr(attribute))
+
+    if modname is None:
+        return None
+
+    module = import_module(modname)
+    new = _find(module, attribute)
+
+    print('NEW FOUND', new)
+    return new
 
 
 def doctree_read(app: Sphinx, doctree: Node) -> None:
@@ -113,6 +169,9 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                 if not new_modname:
                     new_modname = _get_full_modname(app, modname, fullname)
                 modname = new_modname
+            
+            modname = viewcode_follow_imported(app, modname, fullname)
+
             if not modname:
                 continue
             fullname = signode.get('fullname')
