@@ -184,6 +184,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
             type_, start, end = tags[name]
             print('TYPE START END', type_, start, end, maxindex)
             backlink = urito(pagename, docname) + '#' + refname + '.' + name
+            print('BACKLINK', backlink)
             lines[start] = (
                 '<div class="viewcode-block" id="%s"><a class="viewcode-back" '
                 'href="%s">%s</a>' % (name, backlink, _('[docs]')) +
