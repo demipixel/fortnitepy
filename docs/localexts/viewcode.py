@@ -202,7 +202,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         for name, (type_, start, end) in tags.items():
             # type_, start, end = tags[name]
             if name in used:
-                a_elem = '<a class="viewcode-back" href="{}">{}</a> '.format(backlink, _('[docs]'))
+                a_elem = '<a class="viewcode-back" href="{}" style="margin-right: 3px;">{}</a> '.format(backlink, _('[docs]'))
             else:
                 a_elem = ''
             docname = 'api'
