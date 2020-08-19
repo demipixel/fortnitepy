@@ -174,7 +174,7 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
 
             if not modname:
                 continue
-            fullname = signode.get('fullname')
+            # fullname = signode.get('fullname')
             # if not has_tag(modname, fullname, env.docname, refname):
             #     continue
             if fullname in names:
