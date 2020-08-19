@@ -214,7 +214,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
             github_line_link = get_github_line_link(app, file_, start, min(end, maxindex))
             github_a_elem = '<a class="viewcode-back" href="{}">{}</a>'.format(github_line_link, _('[github]'))
             div_elem = '<div class="viewcode-block" id="{}">'.format(name)
-            lines[start] = div_elem + a_elem + github_a_elem + lines[start]
+            lines[start] = div_elem + github_a_elem  + a_elem + lines[start]
             lines[min(end, maxindex)] += '</div>'
         # try to find parents (for submodules)
         parents = []
