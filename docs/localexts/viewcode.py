@@ -180,8 +180,9 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         # the collected tags (HACK: this only works if the tag boundaries are
         # properly nested!)
         maxindex = len(lines) - 1
-        for name, docname in used.items():
-            type_, start, end = tags[name]
+        # for name, docname in used.items():
+        for name, (type_, start, end) in tags.items():
+            # type_, start, end = tags[name]
             print('TYPE START END', type_, start, end, maxindex)
             backlink = urito(pagename, docname) + '#' + refname + '.' + name
             print('BACKLINK', backlink)
