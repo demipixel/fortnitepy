@@ -160,14 +160,14 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
             modname = signode.get('module')
             fullname = signode.get('fullname')
             refname = modname
-            if env.config.viewcode_follow_imported_members:
-                new_modname = app.emit_firstresult(
-                    'viewcode-follow-imported', modname, fullname,
-                )
-                if not new_modname:
-                    new_modname = _get_full_modname(app, modname, fullname)
-                modname = new_modname
-            
+            # if env.config.viewcode_follow_imported_members:
+            #     new_modname = app.emit_firstresult(
+            #         'viewcode-follow-imported', modname, fullname,
+            #     )
+            #     if not new_modname:
+            #         new_modname = _get_full_modname(app, modname, fullname)
+            #     modname = new_modname
+
             ret = viewcode_follow_imported(app, modname, fullname)
             if ret:
                 modname, fullname = ret
