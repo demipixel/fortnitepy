@@ -183,6 +183,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         # for name, docname in used.items():
         for name, (type_, start, end) in tags.items():
             # type_, start, end = tags[name]
+            docname = 'api'
             print('TYPE START END', type_, start, end, maxindex)
             backlink = urito(pagename, docname) + '#' + refname + '.' + name
             print('BACKLINK', backlink)
