@@ -144,7 +144,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
     print('Docnames:', app.project.docnames)
     print('Source Suffix', app.project.source_suffix)
     print('Src Dir:', app.project.srcdir)
-    print('Config:', json.dumps(app.config.values, indent=2, default=lambda o: str(o)))
+    print('Config:', json.dumps(app.config.context, indent=2, default=lambda o: str(o)))
     env = app.builder.env
     if not hasattr(env, '_viewcode_modules'):
         return
