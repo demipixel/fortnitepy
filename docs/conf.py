@@ -92,62 +92,62 @@ html_theme = 'alabaster'
 html_static_path = ['_static']
 
 
-def viewcode_find_source(app, modname):
-    print('viewcode-find-source EVENT', repr(modname))
+# def viewcode_find_source(app, modname):
+#     print('viewcode-find-source EVENT', repr(modname))
 
 
-def _findsub(module, attribute):
-    for submod in module.__dict__:
-        if not isinstance(submod, ModuleType):
-            continue
+# def _findsub(module, attribute):
+#     for submod in module.__dict__:
+#         if not isinstance(submod, ModuleType):
+#             continue
 
-        new = getattr(module, attribute, None)
-        if new is not None:
-            return new
-
-
-def _find(module, attribute):
-    try:
-        value = module
-        for attr in attribute.split('.'):
-            if attr:
-                value = getattr(value, attr, None)
-                if value is None:
-                    bases = getattr(value, '__bases__', None)
-                    if bases is None:
-                        return None
-                    if len(bases) == 1 and bases[0] is object:
-                        return None
-
-                    for base in bases:
-                        new = _findsub(base, attribute)
-                        if new is not None:
-                            value = new
-
-        return getattr(value, '__module__', None)
-    except AttributeError:
-        # sphinx.ext.viewcode can't follow class instance attribute
-        # then AttributeError logging output only verbose mode.
-        return None
-    except Exception:
-        # sphinx.ext.viewcode follow python domain directives.
-        # because of that, if there are no real modules exists that specified
-        # by py:function or other directives, viewcode emits a lot of warnings.
-        # It should be displayed only verbose mode.
-        return None
+#         new = getattr(module, attribute, None)
+#         if new is not None:
+#             return new
 
 
-def viewcode_follow_imported(app, modname, attribute):
-    print('viewcode-follow-imported EVENT', repr(modname), repr(attribute))
+# def _find(module, attribute):
+#     try:
+#         value = module
+#         for attr in attribute.split('.'):
+#             if attr:
+#                 value = getattr(value, attr, None)
+#                 if value is None:
+#                     bases = getattr(value, '__bases__', None)
+#                     if bases is None:
+#                         return None
+#                     if len(bases) == 1 and bases[0] is object:
+#                         return None
 
-    if modname is None:
-        return None
+#                     for base in bases:
+#                         new = _findsub(base, attribute)
+#                         if new is not None:
+#                             value = new
 
-    module = import_module(modname)
-    new = _find(module, attribute)
+#         return getattr(value, '__module__', None)
+#     except AttributeError:
+#         # sphinx.ext.viewcode can't follow class instance attribute
+#         # then AttributeError logging output only verbose mode.
+#         return None
+#     except Exception:
+#         # sphinx.ext.viewcode follow python domain directives.
+#         # because of that, if there are no real modules exists that specified
+#         # by py:function or other directives, viewcode emits a lot of warnings.
+#         # It should be displayed only verbose mode.
+#         return None
 
-    print('NEW FOUND', new)
-    return new
+
+# def viewcode_follow_imported(app, modname, attribute):
+#     print('viewcode-follow-imported EVENT', repr(modname), repr(attribute))
+
+#     if modname is None:
+#         return None
+
+#     module = import_module(modname)
+#     new = _find(module, attribute)
+
+#     print('NEW FOUND', new)
+#     return new
 
 
 def setup(app):
