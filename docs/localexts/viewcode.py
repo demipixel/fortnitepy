@@ -28,6 +28,18 @@ from sphinx.util.nodes import make_refnode
 logger = logging.getLogger(__name__)
 
 
+def get_github_line_link(app, filename, line1, line2):
+    data = app.config._raw_config['context']
+    return 'https://github.com/{user}/{repo}/blob/{version}/{repo}/{file}#L{line1}-L{line2}'.format(
+        user=data['github_user'],
+        repo=data['github_repo'],
+        version=data['github_version'],
+        file=filename,
+        line1=line1,
+        line2=line2
+    )
+
+
 def _get_full_modname(app: Sphinx, modname: str, attribute: str) -> str:
     try:
         return get_full_modname(modname, attribute)
@@ -141,10 +153,10 @@ def missing_reference(app: Sphinx, env: BuildEnvironment, node: Element, contnod
 
 
 def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
-    print('Docnames:', app.project.docnames)
-    print('Source Suffix', app.project.source_suffix)
-    print('Src Dir:', app.project.srcdir)
-    print('Config:', json.dumps(app.config._raw_config, indent=2, default=lambda o: str(o), skipkeys=True))
+    # print('Docnames:', app.project.docnames)
+    # print('Source Suffix', app.project.source_suffix)
+    # print('Src Dir:', app.project.srcdir)
+    # print('Config:', json.dumps(app.config._raw_config, indent=2, default=lambda o: str(o), skipkeys=True))
     # print('Config:', app.config._raw_config)
     env = app.builder.env
     if not hasattr(env, '_viewcode_modules'):
@@ -163,7 +175,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         if not entry:
             continue
         code, tags, used, refname = entry
-        print(json.dumps(entry, indent=2))
+        # print(json.dumps(entry, indent=2))
         # construct a page name for the highlighted source
         pagename = '_modules/' + modname.replace('.', '/')
         # highlight the source using the builder's highlighter
@@ -186,6 +198,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         # properly nested!)
         maxindex = len(lines) - 1
         # for name, docname in used.items():
+        print(modname)
         for name, (type_, start, end) in tags.items():
             # type_, start, end = tags[name]
             if name in used:
@@ -196,6 +209,9 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
             print('TYPE START END', type_, start, end, maxindex)
             backlink = urito(pagename, docname) + '#' + refname + '.' + name
             print('BACKLINK', backlink)
+
+            # file_ = modname.replace('/')
+            # github_line_link = get_github_line_link(app, )
             div_elem = '<div class="viewcode-block" id="{}">'.format(name)
             lines[start] = div_elem + a_elem + lines[start]
             lines[min(end, maxindex)] += '</div>'
