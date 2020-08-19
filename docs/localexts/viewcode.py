@@ -184,14 +184,15 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         for name, (type_, start, end) in tags.items():
             # type_, start, end = tags[name]
             if name in used:
-                a_elem = '<a class="viewcode-back" href="%s">%s</a>' % (name, backlink, _('[docs]'))
+                a_elem = '<a class="viewcode-back" href="%s">%s</a>'.format(backlink, _('[docs]'))
             else:
                 a_elem = ''
             docname = 'api'
             print('TYPE START END', type_, start, end, maxindex)
             backlink = urito(pagename, docname) + '#' + refname + '.' + name
             print('BACKLINK', backlink)
-            lines[start] = '<div class="viewcode-block" id="%s">' + a_elem + lines[start]
+            div_elem = '<div class="viewcode-block" id="%s">'.format(name)
+            lines[start] = div_elem + a_elem + lines[start]
             lines[min(end, maxindex)] += '</div>'
         # try to find parents (for submodules)
         parents = []
