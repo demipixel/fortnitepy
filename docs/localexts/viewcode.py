@@ -132,6 +132,7 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                 analyzer.find_tags()
             except Exception:
                 env._viewcode_modules[modname] = False  # type: ignore
+                print('IS SETTING FALSE:', modname, json.dumps(env._viewcode_modules, indent=2, default=lambda o: str(o)))
                 return False
 
             code = analyzer.code
