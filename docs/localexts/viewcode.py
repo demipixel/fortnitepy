@@ -108,7 +108,7 @@ def viewcode_follow_imported(app, modname, attribute):
         return None
 
     module = import_module(modname)
-    new = _find(module, attribute)
+    new = _find_modname(module, attribute)
 
     print('NEW FOUND', new)
     return new
