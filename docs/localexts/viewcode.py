@@ -182,7 +182,13 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                 # only one link per name, please
                 continue
 
-            
+            names.add(fullname)
+            pagename = '_modules/' + modname.replace('.', '/')
+            inline = nodes.inline('', _('[source]'), classes=['viewcode-link'])
+            onlynode = addnodes.only(expr='html')
+            onlynode += addnodes.pending_xref('', inline, reftype='viewcode', refdomain='std',
+                                              refexplicit=False, reftarget=pagename,
+                                              refid=fullname, refdoc=env.docname)
 
             data = env._viewcode_modules[modname][1][fullname]
             github_link = get_github_line_link(
@@ -192,18 +198,10 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                 data[2],
             )
             print('GITHUB LINK', github_link)
-            elem = '<a class="reference internal" href="{}" style="margin-right: 3px;"><span class="viewcode-link">{}</span></a>'.format(github_link, _('[github]'))
-            signode += elem
 
-            onlynode = addnodes.only(expr='html')
-            names.add(fullname)
-            pagename = '_modules/' + modname.replace('.', '/')
-            inline = nodes.inline('', _('[source]'), classes=['viewcode-link'])
+            inline = nodes.inline('', _('[github]'), classes=['viewcode-link'])
             onlynode += addnodes.pending_xref('', inline, reftype='viewcode', refdomain='std',
-                                              refexplicit=False, reftarget=pagename,
-                                              refid=fullname, refdoc=env.docname)
-            print('ONLYNODE', onlynode)
-
+                                              refexplicit=False, reftarget=github_link)
             signode += onlynode
 
     print('ENV VIEWCODE MODULES', json.dumps(env._viewcode_modules, indent=2, default=lambda o: str(o)))
