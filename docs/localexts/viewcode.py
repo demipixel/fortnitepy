@@ -182,10 +182,9 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                 # only one link per name, please
                 continue
 
-            onlynode = addnodes.only(expr='html')
+            
 
-            data = env._viewcode_modules[modname][2][fullname]
-            print('DATA', data)
+            data = env._viewcode_modules[modname][1][fullname]
             github_link = get_github_line_link(
                 app,
                 modname.replace('.', '/') + '.py',
@@ -194,14 +193,16 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
             )
             print('GITHUB LINK', github_link)
             elem = '<a class="reference internal" href="{}" style="margin-right: 3px;"><span class="viewcode-link">{}</span></a>'.format(github_link, _('[github]'))
-            onlynode += elem
+            signode += elem
 
+            onlynode = addnodes.only(expr='html')
             names.add(fullname)
             pagename = '_modules/' + modname.replace('.', '/')
             inline = nodes.inline('', _('[source]'), classes=['viewcode-link'])
             onlynode += addnodes.pending_xref('', inline, reftype='viewcode', refdomain='std',
                                               refexplicit=False, reftarget=pagename,
                                               refid=fullname, refdoc=env.docname)
+            print('ONLYNODE', onlynode)
 
             signode += onlynode
 
