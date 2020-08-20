@@ -190,12 +190,9 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                                               refexplicit=False, reftarget=pagename,
                                               refid=fullname, refdoc=env.docname)
 
-            try:
-                data = env._viewcode_modules[modname][fullname]
-            except TypeError:
-                print('ERRORED AT:', fullname)
-                print(env._viewcode_modules[modname])
-                raise
+
+            data = env._viewcode_modules[modname][2][fullname]
+
             github_link = get_github_line_link(
                 app,
                 modname.replace('.', '/') + '.py',
