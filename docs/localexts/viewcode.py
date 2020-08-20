@@ -190,6 +190,8 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                                               refid=fullname, refdoc=env.docname)
             signode += onlynode
 
+    print('ENV VIEWCODE MODULES', json.dumps(env._viewcode_modules, indent=2, default=lambda o: str(o)))
+
 
 def env_merge_info(app: Sphinx, env: BuildEnvironment, docnames: Iterable[str],
                    other: BuildEnvironment) -> None:
