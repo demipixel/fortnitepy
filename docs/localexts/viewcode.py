@@ -157,7 +157,7 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
         for signode in objnode:
             if not isinstance(signode, addnodes.desc_signature):
                 continue
-            print('SIGNODE', json.dumps(signode, indent=2, default=lambda o: str(o)))
+            # print('SIGNODE', json.dumps(signode, indent=2, default=lambda o: str(o)))
             modname = signode.get('module')
             fullname = signode.get('fullname')
             refname = modname
@@ -204,7 +204,7 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                                               refexplicit=False, reftarget=github_link)
             signode += onlynode
 
-    print('ENV VIEWCODE MODULES', json.dumps(env._viewcode_modules, indent=2, default=lambda o: str(o)))
+    # print('ENV VIEWCODE MODULES', json.dumps(env._viewcode_modules, indent=2, default=lambda o: str(o)))
 
 
 def env_merge_info(app: Sphinx, env: BuildEnvironment, docnames: Iterable[str],
@@ -305,7 +305,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         parents.append({'link': urito(pagename, '_modules/index'),
                         'title': _('Module code')})
         parents.reverse()
-        print(json.dumps(parents, indent=2))
+        # print(json.dumps(parents, indent=2))
         # putting it all together
         context = {
             'parents': parents,
