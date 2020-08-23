@@ -201,7 +201,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         maxindex = len(lines) - 1
         for name, (type_, start, end) in tags.items():
             docname = 'api'
-            backlink = urito(pagename, docname) + '#' + refname + '.' + name
+            backlink = urito(pagename, docname) + '#' + refname + '.' + name + '?referrer={}'.format(refname + '.' + name)
 
             if name in used:
                 a_elem = '<a class="viewcode-back" href="{}" style="margin-right: 3px;">{}</a> '.format(backlink, _('[docs]'))
