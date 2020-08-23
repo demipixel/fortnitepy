@@ -48,20 +48,11 @@ def _resolve(app, modname, attribute):
 
     module = import_module(modname)
 
-    print('PRE:', module, attribute)
     try:
         value = module
         for attr in attribute.split('.'):
             if attr:
-                print('SEC:', attr)
                 value = getattr(value, attr, None)
-                print('THI:', value, getattr(value, '__bases__', None))
-                if value is None:
-                    while not (len(bases) == 1 and bases[0] is object):
-                        for base in bases:
-                            _val = getattr(base, attribute, None)
-                            if _val is not None:
-                                value = _val
 
         return getattr(value, '__module__', None), getattr(value, '__qualname__', None)
     except AttributeError:
