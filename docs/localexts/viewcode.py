@@ -115,6 +115,7 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
 
             modname = signode.get('module')
             fullname = signode.get('fullname')
+            ogfullname = fullname
             refname = modname
 
             ret = _resolve(app, modname, fullname)
@@ -135,7 +136,8 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
             onlynode = addnodes.only(expr='html')
             onlynode += addnodes.pending_xref('', inline, reftype='viewcode', refdomain='std',
                                               refexplicit=False, reftarget=pagename,
-                                              refid=fullname, refdoc=env.docname)
+                                              refid=fullname+'?referrer={}'.format(ogfullname),
+                                              refdoc=env.docname)
             signode += onlynode
 
 
