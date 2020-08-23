@@ -42,41 +42,20 @@ def get_github_line_link(app, filepath, line1, line2):
     )
 
 
-def _get_full_modname(app: Sphinx, modname: str, attribute: str) -> str:
-    try:
-        return get_full_modname(modname, attribute)
-    except AttributeError:
-        # sphinx.ext.viewcode can't follow class instance attribute
-        # then AttributeError logging output only verbose mode.
-        logger.verbose('Didn\'t find %s in %s', attribute, modname)
-        return None
-    except Exception as e:
-        # sphinx.ext.viewcode follow python domain directives.
-        # because of that, if there are no real modules exists that specified
-        # by py:function or other directives, viewcode emits a lot of warnings.
-        # It should be displayed only verbose mode.
-        logger.verbose(traceback.format_exc().rstrip())
-        logger.verbose('viewcode can\'t import %s, failed with error "%s"', modname, e)
+def _resolve(app, modname, attribute):
+    if modname is None:
         return None
 
+    module = import_module(modname)
 
-def _findsub(module, attribute):
-    for submod in module.__dict__:
-        if not isinstance(submod, ModuleType):
-            continue
-
-        new = getattr(module, attribute, None)
-        if new is not None:
-            return new
-
-
-
-def _find_modname(module, attribute):
+    print('PRE:', module, attribute)
     try:
         value = module
         for attr in attribute.split('.'):
             if attr:
+                print('SEC:', attr)
                 value = getattr(value, attr, None)
+                print('THI:', value, getattr(value, '__bases__', None))
                 if value is None:
                     while not (len(bases) == 1 and bases[0] is object):
                         for base in bases:
@@ -84,7 +63,6 @@ def _find_modname(module, attribute):
                             if _val is not None:
                                 value = _val
 
-        print('THE VALUE:', getattr(value, '__qualname__', None))
         return getattr(value, '__module__', None), getattr(value, '__qualname__', None)
     except AttributeError:
         # sphinx.ext.viewcode can't follow class instance attribute
@@ -96,19 +74,6 @@ def _find_modname(module, attribute):
         # by py:function or other directives, viewcode emits a lot of warnings.
         # It should be displayed only verbose mode.
         return None
-
-
-def viewcode_follow_imported(app, modname, attribute):
-    print('viewcode-follow-imported EVENT', repr(modname), repr(attribute))
-
-    if modname is None:
-        return None
-
-    module = import_module(modname)
-    new = _find_modname(module, attribute)
-
-    print('NEW FOUND', new)
-    return new
 
 
 def doctree_read(app: Sphinx, doctree: Node) -> None:
@@ -132,7 +97,6 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                 analyzer.find_tags()
             except Exception:
                 env._viewcode_modules[modname] = False  # type: ignore
-                print('IS SETTING FALSE:', modname, json.dumps(env._viewcode_modules, indent=2, default=lambda o: str(o)))
                 return False
 
             code = analyzer.code
@@ -157,25 +121,17 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
         for signode in objnode:
             if not isinstance(signode, addnodes.desc_signature):
                 continue
-            # print('SIGNODE', json.dumps(signode, indent=2, default=lambda o: str(o)))
+
             modname = signode.get('module')
             fullname = signode.get('fullname')
             refname = modname
-            # if env.config.viewcode_follow_imported_members:
-            #     new_modname = app.emit_firstresult(
-            #         'viewcode-follow-imported', modname, fullname,
-            #     )
-            #     if not new_modname:
-            #         new_modname = _get_full_modname(app, modname, fullname)
-            #     modname = new_modname
 
-            ret = viewcode_follow_imported(app, modname, fullname)
+            ret = _resolve(app, modname, fullname)
             if ret:
                 modname, fullname = ret
 
             if not modname:
                 continue
-            # fullname = signode.get('fullname')
             if not has_tag(modname, fullname, env.docname, refname):
                 continue
             if fullname in names:
@@ -190,25 +146,6 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                                               refexplicit=False, reftarget=pagename,
                                               refid=fullname, refdoc=env.docname)
             signode += onlynode
-
-            data = env._viewcode_modules[modname][1][fullname]
-            github_link = get_github_line_link(
-                app,
-                modname.replace('.', '/') + '.py',
-                data[1],
-                data[2],
-            )
-            print('GITHUB LINK', github_link)
-            print('REFID:', fullname)
-            print('REFDOC:', env.docname)
-            inline = nodes.inline('', _('[github]'), classes=['viewcode-link'])
-            onlynode = addnodes.only(expr='html')
-            onlynode += addnodes.manpage('', inline, reftype='viewcode', refdomain='std',
-                                         refexplicit=False, reftarget=github_link,
-                                         refid=fullname, refdoc=env.docname)
-            signode += onlynode
-
-    # print('ENV VIEWCODE MODULES', json.dumps(env._viewcode_modules, indent=2, default=lambda o: str(o)))
 
 
 def env_merge_info(app: Sphinx, env: BuildEnvironment, docnames: Iterable[str],
@@ -233,11 +170,6 @@ def missing_reference(app: Sphinx, env: BuildEnvironment, node: Element, contnod
 
 
 def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
-    # print('Docnames:', app.project.docnames)
-    # print('Source Suffix', app.project.source_suffix)
-    # print('Src Dir:', app.project.srcdir)
-    # print('Config:', json.dumps(app.config._raw_config, indent=2, default=lambda o: str(o), skipkeys=True))
-    # print('Config:', app.config._raw_config)
     env = app.builder.env
     if not hasattr(env, '_viewcode_modules'):
         return
@@ -245,8 +177,6 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
     urito = app.builder.get_relative_uri
 
     modnames = set(env._viewcode_modules)  # type: ignore
-    # print(json.dumps(env._viewcode_modules, indent=2))
-
     for modname, entry in status_iterator(
             sorted(env._viewcode_modules.items()),  # type: ignore
             __('highlighting module code... '), "blue",
@@ -255,7 +185,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         if not entry:
             continue
         code, tags, used, refname = entry
-        # print(json.dumps(entry, indent=2))
+
         # construct a page name for the highlighted source
         pagename = '_modules/' + modname.replace('.', '/')
         # highlight the source using the builder's highlighter
@@ -263,39 +193,36 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
             lexer = env.config.highlight_language
         else:
             lexer = 'python'
-        # print('HIGHLIGHTING', code)
+
         highlighted = highlighter.highlight_block(code, lexer, linenos=False)
-        # print('HIGHLIGHTED', highlighted)
         # split the code into lines
         lines = highlighted.splitlines()
         # split off wrap markup from the first line of the actual code
         before, after = lines[0].split('<pre>')
         lines[0:1] = [before + '<pre>', after]
-        # print('BEFORE', lines, 'AFTER')
+
         # nothing to do for the last line; it always starts with </pre> anyway
         # now that we have code lines (starting at index 1), insert anchors for
         # the collected tags (HACK: this only works if the tag boundaries are
         # properly nested!)
         maxindex = len(lines) - 1
-        # for name, docname in used.items():
-        print(modname)
         for name, (type_, start, end) in tags.items():
-            # type_, start, end = tags[name]
+            docname = 'api'
+            backlink = urito(pagename, docname) + '#' + refname + '.' + name
+
             if name in used:
                 a_elem = '<a class="viewcode-back" href="{}" style="margin-right: 3px;">{}</a> '.format(backlink, _('[docs]'))
             else:
                 a_elem = ''
-            docname = 'api'
-            print('TYPE START END', type_, start, end, maxindex)
-            backlink = urito(pagename, docname) + '#' + refname + '.' + name
-            print('BACKLINK', backlink)
 
             file_ = modname.replace('.', '/') + '.py'
             github_line_link = get_github_line_link(app, file_, start, min(end, maxindex))
             github_a_elem = '<a class="viewcode-back" href="{}">{}</a>'.format(github_line_link, _('[github]'))
             div_elem = '<div class="viewcode-block" id="{}">'.format(name)
+
             lines[start] = div_elem + github_a_elem  + a_elem + lines[start]
             lines[min(end, maxindex)] += '</div>'
+
         # try to find parents (for submodules)
         parents = []
         parent = modname
@@ -309,7 +236,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         parents.append({'link': urito(pagename, '_modules/index'),
                         'title': _('Module code')})
         parents.reverse()
-        # print(json.dumps(parents, indent=2))
+
         # putting it all together
         context = {
             'parents': parents,
