@@ -132,7 +132,8 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
 
             names.add(fullname)
             pagename = '_modules/' + modname.replace('.', '/')
-            inline = nodes.inline('', _('[source]'), classes=['viewcode-link', 'source-link'])
+            fullname_class = 'fullname-{}'.format(ogfullname.replace('.', '-'))
+            inline = nodes.inline('', _('[source]'), classes=['viewcode-link', 'source-link', fullname_class])
             onlynode = addnodes.only(expr='html')
             onlynode += addnodes.pending_xref('', inline, reftype='viewcode', refdomain='std',
                                               refexplicit=False, reftarget=pagename,
