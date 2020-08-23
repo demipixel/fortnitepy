@@ -3,6 +3,11 @@ $(document).ready(function () {
   var activeLink = null;
   var bottomHeightThreshold = $(document).height() - 30;
 
+  $('.source-link').parent().click(function (event) {
+    event.preventDefault();
+    window.location.href = $(this).parent().attr('href') + '?referrer=test';
+  });
+
   $(window).scroll(function (event) {
     var distanceFromTop = $(this).scrollTop();
     var currentSection = null;
@@ -27,10 +32,5 @@ $(document).ready(function () {
       activeLink = $('.sphinxsidebar a[href="#' + currentSection.attr('id') + '"]');
       activeLink.parent().addClass('active');
     }
-  });
-
-  $('.source-link').parent().click(function(event) {
-    event.preventDefault();
-    window.location.href = $(this).parent().attr('href') + '?referrer=test';
   });
 });
