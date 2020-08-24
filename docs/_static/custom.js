@@ -46,7 +46,7 @@ $(document).ready(function () {
   });
 
   $('.docs-link').click(function(event) {
-    // event.preventDefault();
+    event.preventDefault();
     const fullname = sessionStorage.getItem('referrer');
     console.log(fullname);
     if (!fullname) return;
@@ -55,6 +55,7 @@ $(document).ready(function () {
     const newHref = elem.attr('href').split('#').slice(0, 1) + '#' + fullname;
     
     console.log(newHref);
-    window.location.href = newHref;
+    elem.attr('href', newHref);
+    // window.location.href = newHref;
   });
 });
