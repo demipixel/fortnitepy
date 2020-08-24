@@ -1,6 +1,7 @@
 @import url('basic.css');
 
 div.document {
+  font-family: 'Open Sans', sans-serif;
 	margin: 10px auto 0 auto;
 	max-width: 1200px; /* page width */
 	width: 100%;
@@ -177,7 +178,7 @@ div.sphinxsidebar a {
 
 div.sphinxsidebar input {
 	border: 1px solid #ccc;
-	font-family: sans-serif;
+	/* font-family: sans-serif; */
 	font-size: 1em;
 	margin-top: 10px;
 }

@@ -176,7 +176,7 @@ def process_attributetable(app, doctree, fromdocname):
         for label, subitems in groups.items():
             if not subitems:
                 continue
-            table.append(class_results_to_node(label, sorted(subitems, key=lambda c: c.label)))
+            table.append(class_results_to_node(label, sorted(subitems, key=lambda c: (getattr(c.badge, 'rawsource', None) or 'aa') + c.label)))
 
         table['python-class'] = fullname
 
@@ -212,7 +212,8 @@ def get_class_results(lookup, modulename, name, fullname):
             doc = value.__doc__ or ''
             if inspect.iscoroutinefunction(value) or doc.startswith('|coro|'):
                 key = _('Methods')
-                badge = attributetablebadge('async def', 'async def')
+                badge = attributetablebadge('await', 'await')
+                # raise TypeError(str(inspect.getmembers(badge)))
                 badge['badge-type'] = _('coroutine')
             elif isinstance(value, classmethod):
                 key = _('Methods')
@@ -227,11 +228,17 @@ def get_class_results(lookup, modulename, name, fullname):
                     key = _('Methods')
                 else:
                     key = _('Methods')
-                    badge = attributetablebadge('def', 'def')
+                    badge = attributetablebadge('', '')
                     badge['badge-type'] = _('method')
+
+        if key == methods_key:
+            label += '()'
 
         groups[key].append(TableElement(fullname=attrlookup, label=label, badge=badge))
 
+    # groups[methods_key].sort(key=lambda k: k.badge.rawsource)
+    # import json
+    # raise TypeError(json.dumps(groups[methods_key], indent=2, default=lambda k: repr(k)))
     return groups
 
 
@@ -253,6 +260,7 @@ def class_results_to_node(key, elements):
 
 
 def setup(app):
+    print('Setting up attributetable')
     app.add_directive('attributetable', PyAttributeTable)
     app.add_node(attributetable, html=(visit_attributetable_node, depart_attributetable_node))
     app.add_node(attributetablecolumn, html=(visit_attributetablecolumn_node, depart_attributetablecolumn_node))

@@ -31,7 +31,11 @@ logger = logging.getLogger(__name__)
 
 
 def get_github_line_link(app, filepath, line1, line2):
-    data = app.config._raw_config['context']
+    try:
+        data = app.config._raw_config['context']
+    except KeyError:
+        return None
+
     return 'https://github.com/{user}/{repo}/blob/{version}/{filepath}#L{line1}-L{line2}'.format(
         user=data['github_user'],
         repo=data['github_repo'],
@@ -223,7 +227,11 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
 
             file_ = modname.replace('.', '/') + '.py'
             github_line_link = get_github_line_link(app, file_, start, min(end, maxindex))
-            github_a_elem = '<a class="viewcode-back" href="{}">{}</a>'.format(github_line_link, _('[github]'))
+            if github_line_link is not None:
+                github_a_elem = '<a class="viewcode-back" href="{}">{}</a>'.format(github_line_link, _('[github]'))
+            else:
+                github_a_elem = ''
+
             div_elem = '<div class="viewcode-block" id="{}">'.format(name)
 
             lines[start] = div_elem + github_a_elem  + a_elem + lines[start]
