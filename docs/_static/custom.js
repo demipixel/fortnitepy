@@ -53,3 +53,13 @@ $(document).ready(function() {
     elem.attr('href', newHref);
   });
 });
+
+$(document).on('DOMContentLoaded', function() {
+  const tables = document.querySelectorAll('.py-attribute-table[data-move-to-id]');
+  tables.forEach(function(table) {
+    let element = document.getElementById(table.getAttribute('data-move-to-id'));
+    let parent = element.parentNode;
+    // insert ourselves after the element
+    parent.insertBefore(table, element.nextSibling);
+  });
+});
