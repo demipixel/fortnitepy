@@ -40,6 +40,71 @@ div.footer a {
 	text-decoration: underline;
 }
 
+/* attribute tables */
+.py-attribute-table {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  margin: 0 2em;
+  padding-top: 16px;
+}
+
+.py-attribute-table-column {
+  flex: 1 1 auto;
+}
+
+.py-attribute-table-column:not(:first-child) {
+  margin-top: 1em;
+}
+
+.py-attribute-table-column>span {
+  font-weight: bold;
+  color: #333333;
+}
+
+main .py-attribute-table-column>ul {
+  list-style: none;
+  margin: 4px 0px;
+  padding-left: 0;
+  font-size: 0.95em;
+}
+
+.py-attribute-table-entry {
+  margin: 0;
+  padding: 2px 0;
+  padding-left: 0.2em;
+  border-left: 2px solid #d6d6d6;
+  display: flex;
+  line-height: 1.2em;
+}
+
+.py-attribute-table-entry>a {
+  padding-left: 0.5em;
+  color: #5c5c5c;
+  flex-grow: 1;
+}
+
+.py-attribute-table-entry>a:hover {
+  color: #2591c4;
+  text-decoration: none;
+}
+
+.py-attribute-table-entry:hover {
+  background-color: #e0e0e0;
+  border-left: 2px solid #75787b;
+  text-decoration: none;
+}
+
+.py-attribute-table-badge {
+  flex-basis: 3em;
+  text-align: right;
+  font-size: 0.9em;
+  color: #292929;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 div.related {
 	padding: 10px 10px;
 	width: auto;
