@@ -217,14 +217,14 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
             backlink = urito(pagename, docname) + '#' + refname + '.' + name
 
             if name in used:
-                a_elem = '<a class="viewcode-back" href="{}" style="margin-right: 3px;">{}</a> '.format(backlink, _('[docs]'))
+                a_elem = '<a class="viewcode-back docs-link" href="{}" style="margin-right: 3px;">{}</a> '.format(backlink, _('[docs]'))
             else:
                 a_elem = ''
 
             file_ = modname.replace('.', '/') + '.py'
             github_line_link = get_github_line_link(app, file_, start, min(end, maxindex))
             github_a_elem = '<a class="viewcode-back" href="{}">{}</a>'.format(github_line_link, _('[github]'))
-            div_elem = '<div class="viewcode-block docs-link" id="{}">'.format(name)
+            div_elem = '<div class="viewcode-block" id="{}">'.format(name)
 
             lines[start] = div_elem + github_a_elem  + a_elem + lines[start]
             lines[min(end, maxindex)] += '</div>'
