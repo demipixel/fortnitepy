@@ -228,8 +228,6 @@ def get_class_results(lookup, modulename, name, fullname):
                     key = _('Methods')
                 else:
                     key = _('Methods')
-                    badge = attributetablebadge('', '')
-                    badge['badge-type'] = _('method')
 
         if key == methods_key:
             label += '()'
@@ -249,7 +247,8 @@ def class_results_to_node(key, elements):
         ref = nodes.reference('', '', internal=True,
                                       refuri='#' + element.fullname,
                                       anchorname='',
-                                      *[nodes.Text(element.label)])
+                                      *[nodes.Text(element.label)],
+                                      classes=['py-attribute-table-name'])
         para = addnodes.compact_paragraph('', '', ref)
         if element.badge is not None:
             ul.append(attributetable_item('', element.badge, para))

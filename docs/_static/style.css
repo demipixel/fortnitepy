@@ -86,7 +86,7 @@ main .py-attribute-table-column>ul {
 
 .py-attribute-table-entry>a {
   padding-left: 0.5em;
-  color: #5c5c5c;
+  color: #444444;
   flex-grow: 1;
 }
 
@@ -102,10 +102,11 @@ main .py-attribute-table-column>ul {
 }
 
 .py-attribute-table-badge {
-  flex-basis: 3em;
+  padding-left: 0.5em;
   text-align: right;
   font-size: 0.9em;
   color: #292929;
+  font-weight: bold;
   -moz-user-select: none;
   -webkit-user-select: none;
   user-select: none;
