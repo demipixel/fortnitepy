@@ -136,8 +136,8 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
             classes = ['viewcode-link', 'source-link']
             if fullname != ogfullname:
                 new = ogfullname.replace('.', '-')
-                if '.' in fullname:
-                    new = refname + '.' + new
+                if '.' in ogfullname:
+                    new = refname + '-' + new
                 else:
                     new = new.lower()
 

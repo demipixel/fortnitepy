@@ -29,10 +29,12 @@ $(document).ready(function () {
     }
   });
 
-  $('.source-link').parent().click(function() {
+  $('.source-link').parent().click(function(event) {
+    event.preventDefault();
     const rawFullname = $(this).attr('class').split(/\s+/).find(function (c) {
       return c.startsWith('fullname')
     });
+    console.log(rawFullname);
     if (!rawFullname) return;
 
     const split = rawFullname.split('-');
@@ -40,6 +42,7 @@ $(document).ready(function () {
 
     if (fullname === 'none') fullname = null;
     sessionStorage.setItem('referrer', fullname);
+    console.log(fullname);
   });
 
   $('.docs-link').click(function(event) {
