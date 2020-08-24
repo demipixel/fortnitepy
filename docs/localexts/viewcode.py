@@ -132,8 +132,21 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
 
             names.add(fullname)
             pagename = '_modules/' + modname.replace('.', '/')
-            fullname_class = 'fullname-{}'.format(ogfullname.replace('.', '-'))
-            inline = nodes.inline('', _('[source]'), classes=['viewcode-link', 'source-link', fullname_class])
+
+            classes = ['viewcode-link', 'source-link']
+            if fullname != ogfullname:
+                new = ogfullname.replace('.', '-')
+                if '.' in fullname:
+                    new = refname + '.' + new
+                else:
+                    new = new.lower()
+
+                fullname_class = 'fullname-{}'.format(new)
+            else:
+                fullname_class = 'fullname-none'
+
+            classes.append(fullname_class)
+            inline = nodes.inline('', _('[source]'), classes=classes)
             onlynode = addnodes.only(expr='html')
             onlynode += addnodes.pending_xref('', inline, reftype='viewcode', refdomain='std',
                                               refexplicit=False, reftarget=pagename,
@@ -211,7 +224,7 @@ def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
             file_ = modname.replace('.', '/') + '.py'
             github_line_link = get_github_line_link(app, file_, start, min(end, maxindex))
             github_a_elem = '<a class="viewcode-back" href="{}">{}</a>'.format(github_line_link, _('[github]'))
-            div_elem = '<div class="viewcode-block" id="{}">'.format(name)
+            div_elem = '<div class="viewcode-block docs-link" id="{}">'.format(name)
 
             lines[start] = div_elem + github_a_elem  + a_elem + lines[start]
             lines[min(end, maxindex)] += '</div>'
