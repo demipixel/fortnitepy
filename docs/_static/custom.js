@@ -42,7 +42,7 @@ $(document).ready(function () {
     sessionStorage.setItem('referrer', fullname);
   });
 
-  $('.docs-link').click(function() {
+  $('.docs-link').click(function(event) {
     const fullname = sessionStorage.getItem('referrer');
     if (!fullname) return;
 
@@ -50,6 +50,7 @@ $(document).ready(function () {
     const newHref = elem.attr('href').split('#').slice(0, 1) + '#' + fullname;
     
     event.preventDefault();
-    window.location.href = newHref;
+    console.log(newHref);
+    // window.location.href = newHref;
   });
 });
