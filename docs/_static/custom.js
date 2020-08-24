@@ -44,7 +44,7 @@ $(document).ready(function () {
 
   $('.docs-link').click(function() {
     const fullname = sessionStorage.getItem('referrer');
-    if (!fullname) return;
+    if (!fullname || fullname === 'null') return;
 
     const elem = $(this);
     const newHref = elem.attr('href').split('#').slice(0, 1) + '#' + fullname;
