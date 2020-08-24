@@ -29,33 +29,26 @@ $(document).ready(function () {
     }
   });
 
-  $('.source-link').parent().click(function(event) {
-    // event.preventDefault();
+  $('.source-link').parent().click(function() {
     const rawFullname = $(this).children(":first").attr('class').split(/\s+/).find(function (c) {
       return c.startsWith('fullname')
     });
-    console.log(rawFullname);
     if (!rawFullname) return;
 
     const split = rawFullname.split('-');
-    const fullname = split.slice(1, split.length).join('.');
+    let fullname = split.slice(1, split.length).join('.');
 
     if (fullname === 'none') fullname = null;
     sessionStorage.setItem('referrer', fullname);
-    console.log(fullname);
   });
 
-  $('.docs-link').click(function(event) {
-    // event.preventDefault();
+  $('.docs-link').click(function() {
     const fullname = sessionStorage.getItem('referrer');
-    console.log(fullname);
     if (!fullname) return;
 
     const elem = $(this);
     const newHref = elem.attr('href').split('#').slice(0, 1) + '#' + fullname;
     
-    console.log(newHref);
     elem.attr('href', newHref);
-    // window.location.href = newHref;
   });
 });
