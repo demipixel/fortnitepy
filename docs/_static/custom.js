@@ -1,9 +1,9 @@
-$(document).ready(function () {
+$(document).ready(function() {
   var sections = $('div.section');
   var activeLink = null;
   var bottomHeightThreshold = $(document).height() - 30;
 
-  $(window).scroll(function (event) {
+  $(window).scroll(function() {
     var distanceFromTop = $(this).scrollTop();
     var currentSection = null;
 
@@ -29,6 +29,7 @@ $(document).ready(function () {
     }
   });
 
+  // Store the fullname of the element clicked for possibly later use.
   $('.source-link').parent().click(function() {
     const rawFullname = $(this).children(":first").attr('class').split(/\s+/).find(function (c) {
       return c.startsWith('fullname')
@@ -42,13 +43,13 @@ $(document).ready(function () {
     sessionStorage.setItem('referrer', fullname);
   });
 
+  // Check if a referrer is stored and if so use that value.
   $('.docs-link').click(function() {
     const fullname = sessionStorage.getItem('referrer');
     if (!fullname || fullname === 'null') return;
 
     const elem = $(this);
     const newHref = elem.attr('href').split('#').slice(0, 1) + '#' + fullname;
-    
     elem.attr('href', newHref);
   });
 });
