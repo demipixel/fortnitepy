@@ -43,13 +43,14 @@ $(document).ready(function () {
   });
 
   $('.docs-link').click(function(event) {
+    event.preventDefault();
     const fullname = sessionStorage.getItem('referrer');
+    console.log(fullname);
     if (!fullname) return;
 
     const elem = $(this);
     const newHref = elem.attr('href').split('#').slice(0, 1) + '#' + fullname;
     
-    event.preventDefault();
     console.log(newHref);
     // window.location.href = newHref;
   });
