@@ -38,7 +38,7 @@ from .errors import (PartyError, HTTPException, NotFound, Forbidden,
                      DuplicateFriendship, FriendshipRequestAlreadySent,
                      MaxFriendshipsExceeded, InviteeMaxFriendshipsExceeded,
                      InviteeMaxFriendshipRequestsExceeded)
-from .xmpp import XMPPClient
+from .xmpp import XMPPClient, EventContext
 from .http import HTTPClient
 from .user import (ClientUser, User, BlockedUser, SacSearchEntryUser,
                    UserSearchEntry)
@@ -3002,7 +3002,7 @@ class Client:
                 return True
 
             future = asyncio.ensure_future(
-                self.wait_for(event, check=check, timeout=5),
+                self.wait_for(event, check=check, timeout=2.5),
             )
 
             try:
@@ -3023,11 +3023,35 @@ class Client:
             self.party = party
             asyncio.ensure_future(party.join_chat())
             await party._update_members(party_data['members'])
-
+        
         try:
             await future
         except asyncio.TimeoutError:
-            raise asyncio.TimeoutError('Party join timed out.')
+            body = {
+                "sent": self.to_iso(datetime.datetime.utcnow()),
+                "type": "com.epicgames.social.party.notification.v0.MEMBER_JOINED",
+                "connection": {
+                    "id": self.xmpp.xmpp_client.local_jid,
+                    "meta": {
+                    "urn:epic:conn:platform_s": self.xmpp.xmpp_client.local_jid.resource.split(':')[2],
+                    "urn:epic:conn:type_s": "game"
+                    },
+                    "connected_at": self.to_iso(datetime.datetime.utcnow()),
+                    "updated_at": self.to_iso(datetime.datetime.utcnow()),
+                    "yield_leadership": self.default_party_member_config.yield_leadership,
+                },
+                "revision": 0,
+                "ns": "Fortnite",
+                "party_id": party.id,
+                "account_id": self.user.id,
+                "account_dn": self.user.display_name,
+                "member_state_updated": {},
+                "joined_at": self.to_iso(datetime.datetime.utcnow()),
+                "updated_at": self.to_iso(datetime.datetime.utcnow()),
+                "fake": True
+            }
+            await self.xmpp.event_party_member_joined(EventContext(self, body))
+            # raise asyncio.TimeoutError('Party join timed out.')
 
         return party
 
