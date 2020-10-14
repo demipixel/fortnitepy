@@ -3027,6 +3027,7 @@ class Client:
         try:
             await future
         except asyncio.TimeoutError:
+            print('Ignoring TimeoutError, manually sending MEMBER_JOINED event')
             body = {
                 "sent": self.to_iso(datetime.datetime.utcnow()),
                 "type": "com.epicgames.social.party.notification.v0.MEMBER_JOINED",
