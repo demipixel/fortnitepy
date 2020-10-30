@@ -2989,6 +2989,7 @@ class Client:
 
     async def _join_party(self, party_data: dict, *,
                           event: str = 'party_member_join') -> ClientParty:
+        party_join_response = None
         async with self._internal_join_party_lock:
             party = self.construct_party(party_data)
             await party._update_members(party_data['members'])
@@ -3006,7 +3007,7 @@ class Client:
             )
 
             try:
-                await self.http.party_join_request(party.id)
+                party_join_response = await self.http.party_join_request(party.id)
             except HTTPException as e:
                 if not future.cancelled():
                     future.cancel()
@@ -3052,6 +3053,8 @@ class Client:
                 "fake": True
             }
             await self.xmpp.event_party_member_joined(EventContext(self, body))
+
+            print(party_join_response)
             # raise asyncio.TimeoutError('Party join timed out.')
 
         return party
