@@ -783,6 +783,7 @@ class XMPPClient:
             return
 
         if party.id != body.get('party_id'):
+            print('Got member joined but ignoring! Current: ', party.id + ', Received: ', body.get('party_id'));
             return
 
         if user_id == self.client.user.id:
