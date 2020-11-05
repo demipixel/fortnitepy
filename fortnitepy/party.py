@@ -663,7 +663,7 @@ class PartyMemberMeta(MetaBase):
     @property
     def platform(self) -> str:
         base = self.get_prop('Default:Platform_j')
-        return base['Platform']['platformStr']
+        return base['Platform']['platformStr'] if 'platformStr' in base['Platform'] else base['Platform']['platformDescription']['name']
 
     @property
     def location(self) -> str:
