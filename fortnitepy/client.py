@@ -38,7 +38,7 @@ from .errors import (PartyError, HTTPException, NotFound, Forbidden,
                      DuplicateFriendship, FriendshipRequestAlreadySent,
                      MaxFriendshipsExceeded, InviteeMaxFriendshipsExceeded,
                      InviteeMaxFriendshipRequestsExceeded)
-from .xmpp import XMPPClient, EventContext
+from .xmpp import XMPPClient
 from .http import HTTPClient
 from .user import (ClientUser, User, BlockedUser, SacSearchEntryUser,
                    UserSearchEntry)
@@ -2988,7 +2988,7 @@ class Client:
         return party
 
     async def _join_party(self, party_data: dict, *,
-                          event: str = 'party_member_join') -> ClientParty:
+                          event: str = 'party_member_join', pinger_id: str = None) -> ClientParty:
         async with self._internal_join_party_lock:
             party = self.construct_party(party_data)
             await party._update_members(party_data['members'])
@@ -3002,21 +3002,11 @@ class Client:
                 return True
 
             future = asyncio.ensure_future(
-                self.wait_for(event, check=check, timeout=2.5),
+                self.wait_for(event, check=check, timeout=5.0),
             )
 
             try:
-                attempt = 0
-                data = None
-                
-                while attempt < 3:
-                    attempt += 1
-                    print('Join party attempt ' + str(attempt))
-                    data = await self.http.party_join_request(party.id)
-                    if not data or not 'status' in data or data['status'] != 'PENDING_CONFIRMATION':
-                        print(data)
-                        break
-
+                await self.http.party_join_request(party.id, pinger_id)
             except HTTPException as e:
                 if not future.cancelled():
                     future.cancel()
@@ -3033,15 +3023,15 @@ class Client:
             self.party = party
             asyncio.ensure_future(party.join_chat())
             await party._update_members(party_data['members'])
-        
+
         try:
             await future
         except asyncio.TimeoutError:
-                raise asyncio.TimeoutError('Party join timed out.')
+            raise asyncio.TimeoutError('Party join timed out.')
 
         return party
 
-    async def join_party(self, party_id: str) -> ClientParty:
+    async def join_party(self, party_id: str, pinger_id: str = None) -> ClientParty:
         """|coro|
 
         Joins a party by the party id.
@@ -3105,7 +3095,7 @@ class Client:
 
             try:
                 await self.party._leave()
-                party = await self._join_party(party_data)
+                party = await self._join_party(party_data, pinger_id=pinger_id)
                 return party
             except Exception:
                 await self._create_party(acquire=False)

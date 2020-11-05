@@ -1452,7 +1452,7 @@ class HTTPClient:
         )
         return await self.delete(r, json=payload, **kwargs)
 
-    async def party_join_request(self, party_id: str) -> Any:
+    async def party_join_request(self, party_id: str, pinger_id: str = None) -> Any:
         conf = self.client.default_party_member_config
         conn_type = conf.cls.CONN_TYPE
         payload = {
@@ -1483,11 +1483,13 @@ class HTTPClient:
             },
         }
 
+        endpoint = '/party/api/v1/Fortnite/user/{client_id}/pings/{pinger_id}/join' if pinger_id else '/party/api/v1/Fortnite/parties/{party_id}/members/{client_id}/join'
+
         r = PartyService(
-            ('/party/api/v1/Fortnite/parties/{party_id}/members/'
-             '{client_id}/join'),
+            endpoint,
             party_id=party_id,
-            client_id=self.client.user.id
+            client_id=self.client.user.id,
+            pinger_id=pinger_id
         )
         return await self.post(r, json=payload)
 
