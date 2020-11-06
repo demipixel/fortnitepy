@@ -2989,7 +2989,6 @@ class Client:
 
     async def _join_party(self, party_data: dict, *,
                           event: str = 'party_member_join', pinger_id: str = None) -> ClientParty:
-        output_data = None
         async with self._internal_join_party_lock:
             party = self.construct_party(party_data)
             await party._update_members(party_data['members'])
@@ -3003,11 +3002,11 @@ class Client:
                 return True
 
             future = asyncio.ensure_future(
-                self.wait_for(event, check=check, timeout=5.0),
+                self.wait_for(event, check=check, timeout=8.0),
             )
 
             try:
-                output_data = await self.http.party_join_request(party.id, pinger_id)
+                await self.http.party_join_request(party.id, pinger_id)
             except HTTPException as e:
                 if not future.cancelled():
                     future.cancel()
@@ -3028,7 +3027,6 @@ class Client:
         try:
             await future
         except asyncio.TimeoutError:
-            print('Party join timeout data: ', output_data)
             raise asyncio.TimeoutError('Party join timed out.')
 
         return party
