@@ -3027,7 +3027,6 @@ class Client:
         try:
             await future
         except asyncio.TimeoutError:
-            print('party_data ', party_data)
             raise asyncio.TimeoutError('Party join timed out.')
 
         return party
